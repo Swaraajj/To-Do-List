@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        li>i:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fuild">
+            <a href="#" class="navbar-brand">Todo List</a>
+        </div>
+    </nav>
+    <section class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-4 m-auto">
+                <div class="card">
+                    <div class="card-header text-center bg-black text-white">
+                        <h1>ToDo-List</h1>
+                    </div>
+                    <div class="card-body">
+                        <form id="form-el">
+                            <div class="form-group mb-2">
+                                <input type="text" class="form-control" id="task-title" placeholder="Enter task here">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-dark" id="add-task-btn">Add Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-4 m-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <ol class="list-group" id="task-list-el">
+
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let taskField = document.getElementById('task-title');
+        let submitBtn = document.getElementById('add-task-btn');
+
+        let taskList = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+
+        submitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            let task = taskField.value;
+            if (task.trim() == "") {
+                alert("Please enter a task.");
+                return;
+            }
+            if (submitBtn.innerText == "Update") submitBtn.innerText = "Add Task";
+            taskList.unshift(task);
+            localStorage.setItem('tasks', JSON.stringify(taskList));
+            taskField.value = "";
+            displayTasks();
+        })
+
+
+        function displayTasks() {
+            let eachTask = " ";
+            taskList.forEach(function (task, index) {
+                eachTask +=
+                    `<li class="list-group-item list-group-item-secondary mb-2">
+                                    <span>${task}</span>
+                                    <i class="bi bi-archive-fill float-end" onclick="deleteTask(${index})"></i>
+                                    <i class="bi bi-pencil-square float-end me-2" onclick="updateTask(${index})"></i>
+                                </li>`
+            });
+            document.getElementById('task-list-el').innerHTML = eachTask;
+
+        }
+
+        function deleteTask(index) {
+            taskList.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(taskList));
+            displayTasks();
+        }
+
+
+        function updateTask(index) {
+            taskField.value = taskList[index];
+            deleteTask(index);
+            submitBtn.innerText = 'Update';
+        }
+
+        displayTasks();
+    </script>
+</body>
+
+</html>
